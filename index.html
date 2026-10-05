@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8"><title>CRM Open Source</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1d2330;--mut:#6b7280;--bd:#e3e6eb;--ac:#2563eb;--bad:#dc2626}
+@media(prefers-color-scheme:dark){:root{--bg:#12151c;--card:#1b2029;--tx:#e8ebf0;--mut:#9aa3b2;--bd:#2c3340;--ac:#5b8cff}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,sans-serif}
+header,main{max-width:1000px;margin:auto;padding:12px 16px}header{padding-bottom:0}
+h1{font-size:20px;margin:0 0 10px}nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px}
+nav button{white-space:nowrap;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:7px 14px;border-radius:20px;cursor:pointer}
+nav button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.big{font-size:22px;font-weight:700}.mut{color:var(--mut);font-size:13px}
+input,select{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:7px 9px;max-width:100%}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.row input{flex:1;min-width:120px}
+.btn{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:7px 14px;cursor:pointer;text-decoration:none;font-size:14px}
+.lnk{background:none;border:0;color:var(--bad);cursor:pointer;font-size:13px}
+.tag{font-size:12px;padding:2px 8px;border-radius:10px;background:var(--bg);border:1px solid var(--bd)}
+.kan{display:flex;gap:10px;overflow-x:auto}.col{min-width:200px;flex:1}.col h4{margin:0 0 6px;font-size:13px}
+.sp{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.av{width:40px;height:40px;border-radius:50%;object-fit:cover;background:var(--bd);flex:none}
+.done{text-decoration:line-through;color:var(--mut)}
+</style></head><body>
+<header><div class="sp"><h1>CRM</h1><span id="who" class="mut"></span></div><nav id="nav"></nav></header>
+<main id="m"></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script>
+const sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY);
+const ST=["Baru","Kualifikasi","Penawaran","Negosiasi","Menang","Kalah"],CS=["Lead","Prospek","Pelanggan"];
+let D={contacts:[],deals:[],tickets:[],tasks:[],activities:[]},user=null,tab="Dashboard",open=null,q="";
+const E=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const R=n=>"Rp "+Number(n||0).toLocaleString("id-ID"),v=id=>document.getElementById(id).value;
+const cn=id=>(D.contacts.find(x=>x.id==id)||{name:"-"}).name;
+const opts=(a,s)=>a.map(x=>`<option ${x==s?"selected":""}>${x}</option>`).join("");
+const copts=()=>D.contacts.map(c=>`<option value="${c.id}">${E(c.name)}</option>`).join("");
+const score=c=>Math.round(Math.min(100,(c.email?20:0)+(c.phone?20:0)+{Lead:10,Prospek:30,Pelanggan:50}[c.status]+Math.min(30,D.deals.filter(d=>d.contact_id==c.id).reduce((a,d)=>a+Number(d.value),0)/1e6)));
+// ---- Data layer (Supabase) ----
+async function load(){for(const t of Object.keys(D)){const{data,error}=await sb.from(t).select("*").order("created_at",{ascending:false});if(error)alert(error.message);else D[t]=data}draw()}
+async function ins(t,row){const{error}=await sb.from(t).insert(row);if(error)return alert(error.message);load()}
+async function upd(t,id,p){const{error}=await sb.from(t).update(p).eq("id",id);if(error)return alert(error.message);load()}
+async function del(t,id){const{error}=await sb.from(t).delete().eq("id",id);if(error)return alert(error.message);load()}
+// ---- Cloudinary (unsigned upload) ----
+async function up(file){const f=new FormData();f.append("file",file);f.append("upload_preset",CFG.CLOUDINARY_PRESET);
+const r=await fetch(`https://api.cloudinary.com/v1_1/${CFG.CLOUDINARY_CLOUD}/image/upload`,{method:"POST",body:f});const j=await r.json();if(!j.secure_url)throw new Error(j.error?.message||"Upload gagal");return j.secure_url}
+async function photo(id,el,t="contacts",col="photo_url"){if(!el.files[0])return;try{upd(t,id,{[col]:await up(el.files[0])})}catch(e){alert(e.message)}}
+// ---- Aksi ----
+const A={
+addC(){if(v("n"))ins("contacts",{name:v("n"),company:v("co"),email:v("e"),phone:v("p")})},
+log(i){if(v("lg"))ins("activities",{contact_id:i,note:v("lg")})},
+tog(i){open=open==i?null:i;draw()},
+addD(){if(v("dt")&&v("dc"))ins("deals",{title:v("dt"),contact_id:v("dc"),value:+v("dv")||0})},
+addT(){if(v("ts")&&v("tc"))ins("tickets",{subject:v("ts"),contact_id:v("tc"),priority:v("tp")})},
+addK(){if(v("kt"))ins("tasks",{text:v("kt"),due:v("kd")||null})},
+csv(){const rows=[["Nama","Perusahaan","Email","Telepon","Status","Skor"],...D.contacts.map(c=>[c.name,c.company,c.email,c.phone,c.status,score(c)])];
+const b=new Blob([rows.map(r=>r.map(x=>`"${String(x??"").replace(/"/g,'""')}"`).join(",")).join("\n")],{type:"text/csv"});
+const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="kontak.csv";a.click()},
+async login(s){const f=s?sb.auth.signUp:sb.auth.signInWithPassword;const{error}=await f.call(sb.auth,{email:v("em"),password:v("pw")});if(error)alert(error.message);else if(s)alert("Cek email untuk konfirmasi (jika diaktifkan), lalu masuk.")},
+out(){sb.auth.signOut()}};
+// ---- Tampilan ----
+const V={
+Dashboard(){const w=D.deals.filter(d=>d.stage=="Menang"),cl=D.deals.filter(d=>["Menang","Kalah"].includes(d.stage)).length,tod=new Date().toISOString().slice(0,10);
+const sum=a=>a.reduce((x,d)=>x+Number(d.value),0);
+const k=(l,x)=>`<div class="card"><div class="mut">${l}</div><div class="big">${x}</div></div>`;
+return `<div class="grid">${k("Kontak",D.contacts.length)}${k("Pipeline aktif",R(sum(D.deals.filter(d=>!["Menang","Kalah"].includes(d.stage)))))}${k("Omzet menang",R(sum(w)))}${k("Win rate",(cl?Math.round(w.length/cl*100):0)+"%")}${k("Tiket terbuka",D.tickets.filter(t=>t.status!="Selesai").length)}${k("Tugas jatuh tempo",D.tasks.filter(t=>!t.done&&t.due&&t.due<=tod).length)}</div><button class="btn" onclick="A.csv()">Ekspor kontak (CSV)</button>`},
+Kontak(){const L=D.contacts.filter(c=>(c.name+(c.company||"")+(c.email||"")).toLowerCase().includes(q.toLowerCase()));
+return `<div class="card"><div class="row"><input id="n" placeholder="Nama"><input id="co" placeholder="Perusahaan"><input id="e" placeholder="Email"><input id="p" placeholder="Telepon (628...)"><button class="btn" onclick="A.addC()">Tambah</button></div><input placeholder="Cari..." value="${E(q)}" oninput="q=this.value;draw(1)" style="width:100%"></div>`+L.map(c=>`<div class="card"><div class="sp"><div class="sp" onclick="A.tog('${c.id}')" style="cursor:pointer;flex:1;justify-content:flex-start">${c.photo_url?`<img class="av" src="${E(c.photo_url)}">`:`<div class="av"></div>`}<div><b>${E(c.name)}</b> <span class="mut">${E(c.company)}</span><br><span class="mut">${E(c.email)} ${E(c.phone)}</span></div></div><div style="text-align:right"><select onchange="upd('contacts','${c.id}',{status:this.value})">${opts(CS,c.status)}</select><br><span class="tag">Skor ${score(c)}</span></div></div>`+
+(open==c.id?`<div class="row" style="margin-top:10px">${c.phone?`<a class="btn" target="_blank" href="https://wa.me/${E(c.phone.replace(/\D/g,""))}">WhatsApp</a>`:""}${c.email?`<a class="btn" href="mailto:${E(c.email)}">Email</a>`:""}<label class="btn">Foto<input type="file" accept="image/*" hidden onchange="photo('${c.id}',this)"></label></div><div class="row"><input id="lg" placeholder="Catat interaksi"><button class="btn" onclick="A.log('${c.id}')">Simpan</button></div>${D.activities.filter(a=>a.contact_id==c.id).map(a=>`<div class="mut">• ${new Date(a.created_at).toLocaleDateString("id-ID")}: ${E(a.note)}</div>`).join("")}<button class="lnk" onclick="del('contacts','${c.id}')">Hapus kontak</button>`:"")+`</div>`).join("")},
+Pipeline(){return `<div class="card"><div class="row"><input id="dt" placeholder="Nama deal"><select id="dc">${copts()}</select><input id="dv" type="number" placeholder="Nilai (Rp)"><button class="btn" onclick="A.addD()">Tambah</button></div></div><div class="kan">${ST.map(s=>`<div class="col"><h4>${s}</h4>${D.deals.filter(d=>d.stage==s).map(d=>`<div class="card"><b>${E(d.title)}</b><div class="mut">${E(cn(d.contact_id))}<br>${R(d.value)}</div><select onchange="upd('deals','${d.id}',{stage:this.value})">${opts(ST,d.stage)}</select> <button class="lnk" onclick="del('deals','${d.id}')">x</button></div>`).join("")}</div>`).join("")}</div>`},
+Tiket(){return `<div class="card"><div class="row"><input id="ts" placeholder="Masalah pelanggan"><select id="tc">${copts()}</select><select id="tp">${opts(["Rendah","Sedang","Tinggi"],"Sedang")}</select><button class="btn" onclick="A.addT()">Buat tiket</button></div></div>`+D.tickets.map(t=>`<div class="card sp"><div><b class="${t.status=="Selesai"?"done":""}">${E(t.subject)}</b><br><span class="mut">${E(cn(t.contact_id))}</span> <span class="tag">${t.priority}</span> ${t.attachment_url?`<a href="${E(t.attachment_url)}" target="_blank">lampiran</a>`:`<label class="mut" style="cursor:pointer">+ lampiran<input type="file" accept="image/*" hidden onchange="photo('${t.id}',this,'tickets','attachment_url')"></label>`}</div><select onchange="upd('tickets','${t.id}',{status:this.value})">${opts(["Terbuka","Diproses","Selesai"],t.status)}</select></div>`).join("")},
+Tugas(){return `<div class="card"><div class="row"><input id="kt" placeholder="Tugas / follow-up"><input id="kd" type="date"><button class="btn" onclick="A.addK()">Tambah</button></div></div>`+D.tasks.map(k=>`<div class="card sp"><label class="${k.done?"done":""}"><input type="checkbox" ${k.done?"checked":""} onchange="upd('tasks','${k.id}',{done:this.checked})"> ${E(k.text)} <span class="mut">${E(k.due)}</span></label><button class="lnk" onclick="del('tasks','${k.id}')">Hapus</button></div>`).join("")}};
+function draw(keep){const m=document.getElementById("m"),n=document.getElementById("nav");
+if(!user){n.innerHTML="";document.getElementById("who").innerHTML="";m.innerHTML=`<div class="card" style="max-width:360px;margin:auto"><b>Masuk ke CRM</b><div class="row" style="margin-top:10px"><input id="em" type="email" placeholder="Email"><input id="pw" type="password" placeholder="Password (min 6)"></div><button class="btn" onclick="A.login(0)">Masuk</button> <button class="btn" onclick="A.login(1)">Daftar</button></div>`;return}
+document.getElementById("who").innerHTML=`${E(user.email)} <button class="lnk" onclick="A.out()">Keluar</button>`;
+n.innerHTML=Object.keys(V).map(t=>`<button class="${t==tab?"on":""}" onclick="tab='${t}';open=null;draw()">${t}</button>`).join("");
+m.innerHTML=V[tab]();if(keep){const g=m.querySelector("input[oninput]");if(g){g.focus();g.setSelectionRange(q.length,q.length)}}}
+sb.auth.onAuthStateChange((_,s)=>{user=s?.user||null;user?load():draw()});
+draw();
+</script></body></html>
