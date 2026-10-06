@@ -2,25 +2,39 @@
 <html lang="id"><head><meta charset="utf-8"><title>CRM Open Source</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-:root{--bg:#f6f7f9;--card:#fff;--tx:#1d2330;--mut:#6b7280;--bd:#e3e6eb;--ac:#2563eb;--bad:#dc2626}
-@media(prefers-color-scheme:dark){:root{--bg:#12151c;--card:#1b2029;--tx:#e8ebf0;--mut:#9aa3b2;--bd:#2c3340;--ac:#5b8cff}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,sans-serif}
-header,main{max-width:1000px;margin:auto;padding:12px 16px}header{padding-bottom:0}
-h1{font-size:20px;margin:0 0 10px}nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px}
-nav button{white-space:nowrap;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:7px 14px;border-radius:20px;cursor:pointer}
-nav button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:10px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.big{font-size:22px;font-weight:700}.mut{color:var(--mut);font-size:13px}
-input,select{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:7px 9px;max-width:100%}
+:root{--bg:#f3f4fb;--card:#fff;--tx:#1f2340;--mut:#6b7090;--bd:#e6e8f4;--ac:#6366f1;--bad:#e11d48;--g1:#4f46e5;--g2:#7c3aed;--sh:0 4px 14px rgba(79,70,229,.08)}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1020;--card:#1a1b30;--tx:#ecedf8;--mut:#9a9cc0;--bd:#2b2d4a;--ac:#8b8dff;--g1:#312e81;--g2:#5b21b6;--sh:0 4px 14px rgba(0,0,0,.35)}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;position:relative;min-height:100vh}
+body::before{content:"";position:absolute;inset:0 0 auto 0;height:170px;background:linear-gradient(120deg,var(--g1),var(--g2));z-index:-1}
+header,main{max-width:1000px;margin:auto;padding:14px 16px}header{padding-bottom:0;color:#fff}
+h1{font-size:22px;margin:0 0 12px;letter-spacing:.3px}#who{color:#e0e1ff}#who .lnk{color:#fff;text-decoration:underline}
+nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px}
+nav button{white-space:nowrap;border:0;background:rgba(255,255,255,.18);color:#fff;padding:8px 16px;border-radius:20px;cursor:pointer;font:inherit;transition:.2s}
+nav button:hover{background:rgba(255,255,255,.3)}nav button.on{background:#fff;color:var(--g1);font-weight:600}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:var(--sh)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:12px}.grid .card{margin:0}
+.big{font-size:24px;font-weight:700}.mut{color:var(--mut);font-size:13px}
+input,select{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:8px 10px;max-width:100%;transition:.15s}
+input:focus,select:focus{outline:0;border-color:var(--ac);box-shadow:0 0 0 3px rgba(99,102,241,.2)}
 .row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.row input{flex:1;min-width:120px}
-.btn{background:var(--ac);color:#fff;border:0;border-radius:8px;padding:7px 14px;cursor:pointer;text-decoration:none;font-size:14px}
+.btn{background:linear-gradient(120deg,var(--g1),var(--g2));color:#fff;border:0;border-radius:10px;padding:8px 16px;cursor:pointer;text-decoration:none;font-size:14px;transition:.15s}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(99,102,241,.35)}
 .lnk{background:none;border:0;color:var(--bad);cursor:pointer;font-size:13px}
-.tag{font-size:12px;padding:2px 8px;border-radius:10px;background:var(--bg);border:1px solid var(--bd)}
-.kan{display:flex;gap:10px;overflow-x:auto}.col{min-width:200px;flex:1}.col h4{margin:0 0 6px;font-size:13px}
+.tag{font-size:12px;padding:2px 10px;border-radius:10px;background:rgba(99,102,241,.12);color:var(--ac)}
+.kan{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px}.col{min-width:210px;flex:1}.col h4{margin:0 0 8px;font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
 .sp{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.av{width:40px;height:40px;border-radius:50%;object-fit:cover;background:var(--bd);flex:none}
+.av{width:42px;height:42px;border-radius:50%;object-fit:cover;background:linear-gradient(135deg,var(--g1),var(--g2));flex:none}
 .done{text-decoration:line-through;color:var(--mut)}
+.kpi{cursor:pointer;transition:.2s;position:relative;overflow:hidden}.kpi:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(99,102,241,.22);border-color:var(--ac)}
+.kpi .ic{position:absolute;right:10px;top:8px;font-size:22px;opacity:.55}
+.bw{display:flex;align-items:center;gap:10px;padding:6px 8px;margin-top:4px;border-radius:10px;cursor:pointer;transition:.15s}
+.bw:hover,.bw.on{background:rgba(99,102,241,.1)}.bl{width:86px;font-size:13px}.bt{flex:1;height:10px;background:var(--bg);border-radius:6px;overflow:hidden}
+.bb{height:100%;min-width:3px;border-radius:6px;background:linear-gradient(90deg,var(--g1),var(--g2));animation:grow .6s ease-out}.bn{font-size:12px;color:var(--mut);min-width:120px;text-align:right}
+@keyframes grow{from{width:0}}
+.det{margin-top:8px;padding:8px;border-radius:10px;background:var(--bg)}.det .sp{padding:4px 0;font-size:13px}
+.seg{display:flex;height:14px;border-radius:8px;overflow:hidden;margin:8px 0;background:var(--bg)}.seg div{transition:flex .4s}
+.s0{background:#f59e0b}.s1{background:#6366f1}.s2{background:#10b981}
+.lg{display:flex;gap:14px;flex-wrap:wrap;font-size:13px}.lg span{cursor:pointer}.lg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
 </style></head><body>
 <header><div class="sp"><h1>CRM</h1><span id="who" class="mut"></span></div><nav id="nav"></nav></header>
 <main id="m"></main>
@@ -29,7 +43,7 @@ input,select{font:inherit;color:var(--tx);background:var(--bg);border:1px solid 
 <script>
 const sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY);
 const ST=["Baru","Kualifikasi","Penawaran","Negosiasi","Menang","Kalah"],CS=["Lead","Prospek","Pelanggan"];
-let D={contacts:[],deals:[],tickets:[],tasks:[],activities:[]},user=null,tab="Dashboard",open=null,q="";
+let D={contacts:[],deals:[],tickets:[],tasks:[],activities:[]},user=null,tab="Dashboard",open=null,q="",fx=1,dst=null;
 const E=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const R=n=>"Rp "+Number(n||0).toLocaleString("id-ID"),v=id=>document.getElementById(id).value;
 const cn=id=>(D.contacts.find(x=>x.id==id)||{name:"-"}).name;
@@ -60,21 +74,28 @@ async login(s){const f=s?sb.auth.signUp:sb.auth.signInWithPassword;const{error}=
 out(){sb.auth.signOut()}};
 // ---- Tampilan ----
 const V={
-Dashboard(){const w=D.deals.filter(d=>d.stage=="Menang"),cl=D.deals.filter(d=>["Menang","Kalah"].includes(d.stage)).length,tod=new Date().toISOString().slice(0,10);
-const sum=a=>a.reduce((x,d)=>x+Number(d.value),0);
-const k=(l,x)=>`<div class="card"><div class="mut">${l}</div><div class="big">${x}</div></div>`;
-return `<div class="grid">${k("Kontak",D.contacts.length)}${k("Pipeline aktif",R(sum(D.deals.filter(d=>!["Menang","Kalah"].includes(d.stage)))))}${k("Omzet menang",R(sum(w)))}${k("Win rate",(cl?Math.round(w.length/cl*100):0)+"%")}${k("Tiket terbuka",D.tickets.filter(t=>t.status!="Selesai").length)}${k("Tugas jatuh tempo",D.tasks.filter(t=>!t.done&&t.due&&t.due<=tod).length)}</div><button class="btn" onclick="A.csv()">Ekspor kontak (CSV)</button>`},
+Dashboard(){const sum=a=>a.reduce((x,d)=>x+Number(d.value),0),tod=new Date().toISOString().slice(0,10),fin=["Menang","Kalah"];
+const act=D.deals.filter(d=>!fin.includes(d.stage)),w=D.deals.filter(d=>d.stage=="Menang"),cl=D.deals.filter(d=>fin.includes(d.stage)).length;
+const due=D.tasks.filter(t=>!t.done&&t.due&&t.due<=tod);
+const K=[["Kontak",D.contacts.length,"","Kontak","👥"],["Pipeline aktif",sum(act),"r","Pipeline","📈"],["Omzet menang",sum(w),"r","Pipeline","💰"],["Win rate",cl?Math.round(w.length/cl*100):0,"p","Pipeline","🎯"],["Tiket terbuka",D.tickets.filter(t=>t.status!="Selesai").length,"","Tiket","🎫"],["Tugas jatuh tempo",due.length,"","Tugas","⏰"]];
+const mx=Math.max(1,...ST.map(s=>D.deals.filter(d=>d.stage==s).length)),cc=["#f59e0b","#6366f1","#10b981"];
+return `<div class="grid">${K.map(k=>`<div class="card kpi" onclick="tab='${k[3]}';open=null;fx=1;draw()"><div class="ic">${k[4]}</div><div class="mut">${k[0]}</div><div class="big" data-n="${k[1]}" data-f="${k[2]}">${k[1]}</div></div>`).join("")}</div>
+<div class="card"><b>Deal per tahap</b> <span class="mut">· klik untuk melihat detail</span>${ST.map(s=>{const l=D.deals.filter(d=>d.stage==s);return `<div class="bw ${dst==s?"on":""}" onclick="dst=dst=='${s}'?null:'${s}';draw()"><span class="bl">${s}</span><div class="bt"><div class="bb" style="width:${l.length/mx*100}%"></div></div><span class="bn">${l.length} deal · ${R(sum(l))}</span></div>`}).join("")}${dst?`<div class="det">${D.deals.filter(d=>d.stage==dst).map(d=>`<div class="sp"><span>${E(d.title)} <span class="mut">${E(cn(d.contact_id))}</span></span><b>${R(d.value)}</b></div>`).join("")||'<div class="mut">Belum ada deal di tahap ini</div>'}</div>`:""}</div>
+<div class="card"><b>Status kontak</b><div class="seg">${CS.map((s,i)=>`<div class="s${i}" style="flex:${D.contacts.filter(c=>c.status==s).length}" title="${s}"></div>`).join("")}</div><div class="lg">${CS.map((s,i)=>`<span onclick="tab='Kontak';fx=1;draw()"><i style="background:${cc[i]}"></i>${s}: ${D.contacts.filter(c=>c.status==s).length}</span>`).join("")}</div></div>
+<div class="card"><b>Perlu ditindaklanjuti</b>${due.map(t=>`<label class="sp" style="padding:5px 0"><span><input type="checkbox" onchange="upd('tasks','${t.id}',{done:this.checked})"> ${E(t.text)}</span><span class="mut">${E(t.due)}</span></label>`).join("")||'<div class="mut" style="margin-top:6px">Tidak ada tugas jatuh tempo 🎉</div>'}</div>
+<button class="btn" onclick="A.csv()">Ekspor kontak (CSV)</button>`},
 Kontak(){const L=D.contacts.filter(c=>(c.name+(c.company||"")+(c.email||"")).toLowerCase().includes(q.toLowerCase()));
 return `<div class="card"><div class="row"><input id="n" placeholder="Nama"><input id="co" placeholder="Perusahaan"><input id="e" placeholder="Email"><input id="p" placeholder="Telepon (628...)"><button class="btn" onclick="A.addC()">Tambah</button></div><input placeholder="Cari..." value="${E(q)}" oninput="q=this.value;draw(1)" style="width:100%"></div>`+L.map(c=>`<div class="card"><div class="sp"><div class="sp" onclick="A.tog('${c.id}')" style="cursor:pointer;flex:1;justify-content:flex-start">${c.photo_url?`<img class="av" src="${E(c.photo_url)}">`:`<div class="av"></div>`}<div><b>${E(c.name)}</b> <span class="mut">${E(c.company)}</span><br><span class="mut">${E(c.email)} ${E(c.phone)}</span></div></div><div style="text-align:right"><select onchange="upd('contacts','${c.id}',{status:this.value})">${opts(CS,c.status)}</select><br><span class="tag">Skor ${score(c)}</span></div></div>`+
 (open==c.id?`<div class="row" style="margin-top:10px">${c.phone?`<a class="btn" target="_blank" href="https://wa.me/${E(c.phone.replace(/\D/g,""))}">WhatsApp</a>`:""}${c.email?`<a class="btn" href="mailto:${E(c.email)}">Email</a>`:""}<label class="btn">Foto<input type="file" accept="image/*" hidden onchange="photo('${c.id}',this)"></label></div><div class="row"><input id="lg" placeholder="Catat interaksi"><button class="btn" onclick="A.log('${c.id}')">Simpan</button></div>${D.activities.filter(a=>a.contact_id==c.id).map(a=>`<div class="mut">• ${new Date(a.created_at).toLocaleDateString("id-ID")}: ${E(a.note)}</div>`).join("")}<button class="lnk" onclick="del('contacts','${c.id}')">Hapus kontak</button>`:"")+`</div>`).join("")},
 Pipeline(){return `<div class="card"><div class="row"><input id="dt" placeholder="Nama deal"><select id="dc">${copts()}</select><input id="dv" type="number" placeholder="Nilai (Rp)"><button class="btn" onclick="A.addD()">Tambah</button></div></div><div class="kan">${ST.map(s=>`<div class="col"><h4>${s}</h4>${D.deals.filter(d=>d.stage==s).map(d=>`<div class="card"><b>${E(d.title)}</b><div class="mut">${E(cn(d.contact_id))}<br>${R(d.value)}</div><select onchange="upd('deals','${d.id}',{stage:this.value})">${opts(ST,d.stage)}</select> <button class="lnk" onclick="del('deals','${d.id}')">x</button></div>`).join("")}</div>`).join("")}</div>`},
 Tiket(){return `<div class="card"><div class="row"><input id="ts" placeholder="Masalah pelanggan"><select id="tc">${copts()}</select><select id="tp">${opts(["Rendah","Sedang","Tinggi"],"Sedang")}</select><button class="btn" onclick="A.addT()">Buat tiket</button></div></div>`+D.tickets.map(t=>`<div class="card sp"><div><b class="${t.status=="Selesai"?"done":""}">${E(t.subject)}</b><br><span class="mut">${E(cn(t.contact_id))}</span> <span class="tag">${t.priority}</span> ${t.attachment_url?`<a href="${E(t.attachment_url)}" target="_blank">lampiran</a>`:`<label class="mut" style="cursor:pointer">+ lampiran<input type="file" accept="image/*" hidden onchange="photo('${t.id}',this,'tickets','attachment_url')"></label>`}</div><select onchange="upd('tickets','${t.id}',{status:this.value})">${opts(["Terbuka","Diproses","Selesai"],t.status)}</select></div>`).join("")},
 Tugas(){return `<div class="card"><div class="row"><input id="kt" placeholder="Tugas / follow-up"><input id="kd" type="date"><button class="btn" onclick="A.addK()">Tambah</button></div></div>`+D.tasks.map(k=>`<div class="card sp"><label class="${k.done?"done":""}"><input type="checkbox" ${k.done?"checked":""} onchange="upd('tasks','${k.id}',{done:this.checked})"> ${E(k.text)} <span class="mut">${E(k.due)}</span></label><button class="lnk" onclick="del('tasks','${k.id}')">Hapus</button></div>`).join("")}};
+function anim(){document.querySelectorAll("[data-n]").forEach(el=>{const n=+el.dataset.n,f=el.dataset.f,t0=performance.now(),fm=x=>f=="r"?R(x):f=="p"?x+"%":x;(function st(t){const p=Math.min(1,(t-t0)/700);el.textContent=fm(Math.round(n*(1-Math.pow(1-p,3))));if(p<1)requestAnimationFrame(st)})(t0)})}
 function draw(keep){const m=document.getElementById("m"),n=document.getElementById("nav");
 if(!user){n.innerHTML="";document.getElementById("who").innerHTML="";m.innerHTML=`<div class="card" style="max-width:360px;margin:auto"><b>Masuk ke CRM</b><div class="row" style="margin-top:10px"><input id="em" type="email" placeholder="Email"><input id="pw" type="password" placeholder="Password (min 6)"></div><button class="btn" onclick="A.login(0)">Masuk</button> <button class="btn" onclick="A.login(1)">Daftar</button></div>`;return}
 document.getElementById("who").innerHTML=`${E(user.email)} <button class="lnk" onclick="A.out()">Keluar</button>`;
-n.innerHTML=Object.keys(V).map(t=>`<button class="${t==tab?"on":""}" onclick="tab='${t}';open=null;draw()">${t}</button>`).join("");
-m.innerHTML=V[tab]();if(keep){const g=m.querySelector("input[oninput]");if(g){g.focus();g.setSelectionRange(q.length,q.length)}}}
+n.innerHTML=Object.keys(V).map(t=>`<button class="${t==tab?"on":""}" onclick="tab='${t}';open=null;fx=1;draw()">${t}</button>`).join("");
+m.innerHTML=V[tab]();if(tab=="Dashboard"&&fx){anim();fx=0}if(keep){const g=m.querySelector("input[oninput]");if(g){g.focus();g.setSelectionRange(q.length,q.length)}}}
 sb.auth.onAuthStateChange((_,s)=>{user=s?.user||null;user?load():draw()});
 draw();
 </script></body></html>
